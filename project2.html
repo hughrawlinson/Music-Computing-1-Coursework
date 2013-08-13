@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Music Computing</title>
+<link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<div  id="top">
+  <p><span class="logo">Algorithmically Generated Music<br /></span>
+	<br />
+  <!-- CUSTOMISE MENU-->
+  <span class="menutextactive"><a href="index.html" class="menutext">back</a> </span><span class="menutext"></span><br />
+  <!--END-->
+  </p>
+</div>
+<div id="content2">
+
+    <!-- ADD YOUR CONTENT HERE -->
+    <p><span class="bodytitles">Aims<br /></span>
+    In this project, I am to generate music algorithmically, by using iterative mapping to generate values, and then mapping those values to values that make sense musically. I was interested in polyphony, and decided to try and relate the physics of sonic harmony to midi values using related trigonometric functions, specifically sine and cosine.
+    </p>
+  
+  	<p><span class="bodytitles">Background<br /></span>
+    I designed the algorithms in such a way as to prevent repetition, choosing numbers that weren't easily divisible so that relatively large chunks of the piece would pass before one of the if conditions were filled. I decided to use trigonometric functions to generate diads, as I was interested in harmony in midi notes.
+   	</p>
+    
+    <p>
+    <span class="bodytitles">Implementation<br /></span>
+    The following is the source code for the app. The following code uses Tim Blackwell's SimpleMidiSynth java application, a link to the source can be found <a href="applet/SimpleMidiSynth.java">here</a><br />
+    <code><pre>
+import javax.sound.midi.*;
+
+//Instantiate SimpleMidiSynth
+SimpleMidiSynth synth;
+SimpleMidiSynth synth2;
+int MaxNote = 80;
+int MinNote = 55;
+int scale = 100;
+int value = 0;
+
+void setup() {
+  //construct midi synth
+  synth = new SimpleMidiSynth();
+  synth2 = new SimpleMidiSynth();
+  frameRate(1);
+}
+
+void draw() {
+  //iterative mapping to get a value to sonify
+  if(value%9==0){
+    value += 7;
+  }
+  else if(value%2==0){
+    value += 3;
+  }
+  else{
+    value -= 17;
+  }
+  
+  //creating note array, filling it with zeroes
+  int[] note = new int[MaxNote+1];
+  note = fillArrayWithValues(note,0);
+  
+  //map value to velocity value between MinNote and MaxNote so that velocities are in the same range as the midi note value
+  //map value to note using trigonometric mapping to see harmonic relationship between cosine and sine in diads
+  note[getMidiNote(value, true)] = value%(MaxNote-MinNote)+MinNote;
+  note[getMidiNote(value, false)] = value%(MaxNote-MinNote)+MinNote;
+  synth.play(note, 100);
+}
+
+void stop() {
+  synth.close();
+  exit();
+}
+
+int[] fillArrayWithValues(int[] array, int value){
+  for(int i = 0; i &lt; array.length; i++){
+    array[i] = value;
+  }
+  return array;
+}
+
+int getMidiNote(int phase, boolean mode) {
+  //calculate amplitude of trig functions
+  int amplitude = MaxNote - MinNote;
+  
+  //set mode to sine or cosine
+  if (mode) {
+    //calculate a note based on a sine function within range of MinNote and MaxNote
+    return round(MinNote+(amplitude/2)+(sin(((float)phase/ (float)scale)*PI)*amplitude/2));
+  }
+  else {
+    return round(MinNote+(amplitude/2)+(cos(((float)phase/ (float)scale)*PI)*amplitude/2));
+  }
+}
+
+    </pre></code>
+    </span>
+    </p>
+
+    <audio controls>
+      <source src="project2_audio.ogg" type="audio/ogg">
+      <source src="project2_audio.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+    </audio>
+   
+    <p><span class="bodytitles">Evaluation<br /></span>
+      In conclusion, I feel I have met the aims of my project, as I have explored the harmonic relationship between notes using trigonometric functions and generated those notes (and their velocities) using an iterative algorithm. The outcome of the work was musically interesting, as it was immediately apparent that the diads were all musically harmonic. The fact that the notes were generated in an iterative manner mapped to notes using trigonometric functions was not immediately apparent in the recording, but given the trigonometric mapping they did not particularly have to be. The fact that velocity and initial value for note were generated in the same manner, yet because of the mapping to note could be combined in many different ways was particularly interesting. I would like to continue this area of algorithmically generated music, as I found it particularly interesting.
+    </p>
+    <!-- END -->
+    <p>
+    <br />
+    <br />
+    <br />
+    </p>
+</div>
+</body>
+</html>
